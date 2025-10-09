@@ -8,3 +8,9 @@ function getComputerChoice() {
 for (let i = 0; i < 5; i++) {
   console.log("CPU:", getComputerChoice());
 }
+
+function getHumanChoice() {
+  return prompt("Rock, Paper, or Scissors?").trim().toLowerCase();
+}
+
+console.log("You chose:", getHumanChoice());
