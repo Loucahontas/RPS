@@ -12,12 +12,34 @@ function getComputerChoice() {
   return "scissors";
 }
 
-for (let i = 0; i < 5; i++) {
-  console.log("CPU:", getComputerChoice());
-}
-
 function getHumanChoice() {
   return prompt("Rock, Paper, or Scissors?").trim().toLowerCase();
 }
 
-console.log("You chose:", getHumanChoice());
+function playRound(humanChoice, computerChoice) {
+  const h = humanChoice.toLowerCase();
+  const c = computerChoice.toLowerCase();
+
+  if (h === c) {
+    console.log(`Draw! You both chose ${h}.`);
+    return;
+  }
+
+  const humanWins =
+    (h === "rock" && c === "scissors") ||
+    (h === "paper" && c === "rock") ||
+    (h === "scissors" && c === "paper");
+
+  if (humanWins) {
+    humanScore++;
+    console.log(`You win! ${h} beats ${c}.`);
+  } else {
+    computerScore++;
+    console.log(`You lose! ${c} beats ${h}.`);
+  }
+}
+
+const humanSelection = getHumanChoice();
+const computerSelection = getComputerChoice();
+playRound(humanSelection, computerSelection);
+console.log(`Score — You: ${humanScore}  CPU: ${computerScore}`);
