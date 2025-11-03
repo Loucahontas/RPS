@@ -1,0 +1,21 @@
+<body>
+  <h1>Rock · Paper · Scissors</h1>
+
+  <!-- 3 buttons the player clicks -->
+  <div id="controls">
+    <button data-move="rock">Rock</button>
+    <button data-move="paper">Paper</button>
+    <button data-move="scissors">Scissors</button>
+  </div>
+
+  <!-- where we show round messages + running score -->
+  <div id="results">
+    <p id="status">Click a button to play.</p>
+    <p id="score">You: 0 — CPU: 0</p>
+  </div>
+
+  <!-- appears when someone hits 5 -->
+  <button id="reset" hidden>Reset</button>
+
+  <script src="./app.js"></script>
+</body>

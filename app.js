@@ -1,5 +1,4 @@
 
-
 function getComputerChoice() {
   const n = Math.floor(Math.random() * 3); // 0,1,2
   if (n === 0) return "rock";
@@ -7,17 +6,17 @@ function getComputerChoice() {
   return "scissors";
 }
 
-function getHumanChoice() {
-  return prompt("Rock, Paper, or Scissors?").trim().toLowerCase();
-}
+let humanScore = 0;
+let computerScore = 0;
 
+// 3) One round: update scores + return outcome (keep console logs for now)
 function playRound(humanChoice, computerChoice) {
   const h = humanChoice.toLowerCase();
   const c = computerChoice.toLowerCase();
 
   if (h === c) {
     console.log(`Draw! You both chose ${h}.`);
-    return;
+    return { outcome: "draw", h, c };
   }
 
   const humanWins =
@@ -28,55 +27,55 @@ function playRound(humanChoice, computerChoice) {
   if (humanWins) {
     humanScore++;
     console.log(`You win! ${h} beats ${c}.`);
+    return { outcome: "win", h, c };
   } else {
     computerScore++;
     console.log(`You lose! ${c} beats ${h}.`);
+    return { outcome: "lose", h, c };
   }
 }
 
-function playGame() {
-  let humanScore = 0;
-  let computerScore = 0;
+// 4) Wire up the UI
+const buttons  = document.querySelectorAll('button[data-move]');
+const statusEl = document.getElementById('status');
+const scoreEl  = document.getElementById('score');
+const resetBtn = document.getElementById('reset');
 
-  function playRound(humanChoice, computerChoice) {
-    const h = humanChoice.toLowerCase();
-    const c = computerChoice.toLowerCase();
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const human = btn.dataset.move;     // 'rock' | 'paper' | 'scissors'
+    const cpu   = getComputerChoice();  // random CPU choice
 
-    if (h === c) {
-      console.log(`Draw! You both chose ${h}.`);
-      return;
+    const result = playRound(human, cpu);   // updates scores
+    console.log('round:', result);          // keep logs for this step
+
+    // Update the page
+    statusEl.textContent = renderMessage(result);
+    scoreEl.textContent  = `You: ${humanScore} — CPU: ${computerScore}`;
+
+    // First to 5 → announce & pause game
+    if (humanScore === 5 || computerScore === 5) {
+      const winner = humanScore === 5 ? 'You win the game!' : 'CPU wins the game.';
+      statusEl.textContent = `${winner} Final ${humanScore}—${computerScore}.`;
+      buttons.forEach(b => b.disabled = true);
+      resetBtn.hidden = false;
     }
+  });
+});
 
-    const humanWins =
-      (h === "rock" && c === "scissors") ||
-      (h === "paper" && c === "rock") ||
-      (h === "scissors" && c === "paper");
+// Reset flow
+resetBtn.addEventListener('click', () => {
+  humanScore = 0;
+  computerScore = 0;
+  statusEl.textContent = 'Click a button to play.';
+  scoreEl.textContent  = 'You: 0 — CPU: 0';
+  buttons.forEach(b => b.disabled = false);
+  resetBtn.hidden = true;
+});
 
-    if (humanWins) {
-      humanScore++;
-      console.log(`You win! ${h} beats ${c}.`);
-    } else {
-      computerScore++;
-      console.log(`You lose! ${c} beats ${h}.`);
-    }
-  }
-
-  for (let round = 1; round <= 5; round++) {
-    console.log(`\nRound ${round}:`);
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-    playRound(humanSelection, computerSelection);
-    console.log(`Score — You: ${humanScore}  CPU: ${computerScore}`);
-  }
-
-  console.log("\nFinal result:");
-  if (humanScore > computerScore) {
-    console.log(`You win the game ${humanScore}–${computerScore}!`);
-  } else if (computerScore > humanScore) {
-    console.log(`CPU wins ${computerScore}–${humanScore}.`);
-  } else {
-    console.log(`It’s a draw ${humanScore}–${computerScore}.`);
-  }
+function renderMessage({ outcome, h, c }) {
+  if (outcome === 'draw') return `Draw! You both chose ${h}.`;
+  if (outcome === 'win')  return `You win! ${cap(h)} beats ${cap(c)}.`;
+  return `You lose! ${cap(c)} beats ${cap(h)}.`;
 }
-
-playGame();
+function cap(s) { return s[0].toUpperCase() + s.slice(1); }
